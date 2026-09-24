@@ -6,12 +6,12 @@ Status: Proposed
 Authors:
     - Josh Marchand <josh@sundae.fi>
 Implementors: []
-Solution To:
-    - CPS-0036
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/?
     - CPS-0036 draft PR: https://github.com/cardano-foundation/CIPs/pull/1260
     - Early CIP-0180 draft: https://github.com/cardano-foundation/CIPs/pull/1157
+Solution To:
+    - CPS-0036? | Voluntary Block Producer Software Signalling: https://github.com/cardano-foundation/CIPs/pull/1260
 Created: 2026-09-21
 License: CC-BY-4.0
 ---

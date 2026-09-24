@@ -6,7 +6,7 @@ Status: Proposed
 Authors:
     - Josh Marchand <josh@sundae.fi>
 Implementors: []
-Solution-To:
+Solution To:
     - CPS-0036
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/?

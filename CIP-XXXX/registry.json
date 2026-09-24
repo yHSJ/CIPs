@@ -5,7 +5,7 @@
     "name": "unsignalled",
     "status": "reserved",
     "registered": "2026-09-21",
-    "description": "No signal. Default value of all historical blocks and of implementations that do not participate."
+    "description": "No signal. Default value of historical blocks and of implementations that do not participate."
   },
   {
     "scheme": 0,

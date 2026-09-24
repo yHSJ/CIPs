@@ -52,7 +52,7 @@ protocol_version = [major_protocol_version, uint .size 4]
 major_protocol_version = 0 .. 12
 ```
 
-Ledger rules only depend on the major version; the minor version currently has no impact on block validity, hard-fork initiation, or era selection. The header is signed by the pool's KES key under its operational certificate. Therefore, whatever value is placed there is attributable to a specific pool, even though it is self-declared. 
+Ledger rules only depend on the major version; the minor version has no impact on block validity, hard-fork initiation, or era selection. The header is signed by the pool's KES key under its operational certificate. Therefore, whatever value is placed there is attributable to a specific pool, even though it is self-declared. 
 
 ### Bit layout of the minor version
 
@@ -86,6 +86,7 @@ id      =  minor       & 0xFF
 
 - A producer MUST set `scheme` to `0`. Values `1`, `2` and `3` are reserved for future CIPs. A future CIP defining a new scheme MAY keep the layout of bits 29 - 0 and use the new scheme value only as a fresh identifier space, or MAY redefine those bits entirely. A future CIP MUST NOT change the meaning of `scheme = 0`.
 - A producer MUST set `id` to a value it is entitled to use under the [registry](#registry) for `scheme = 0`.
+- A producer MUST NOT reserve an `id` defined in [Reserved identifiers](#reserved-identifiers), or an existing entry in the [registry](#registry).
 - A producer MAY set `payload` to any 22-bit value whose meaning is documented in the payload specification linked from its registry entry. A producer whose registry entry has no payload specification MUST set `payload` to `0`.
 - The resulting `minor` MUST be encoded as a CBOR `uint` and MUST NOT exceed `4294967295` (`0xFFFFFFFF`).
 - A consumer MUST NOT interpret `payload` or `id` when `scheme` is not `0`.
@@ -97,7 +98,8 @@ Values are shown as the decimal integer that appears in the header, its 32-bit h
 
 | `minor` (decimal) | `minor` (hex) | `scheme` | `payload`   | `id` | Note |
 |-------------------|---------------|----------|-------------|------|------|
-| 0                 | `0x00000000`  | 0        | 0           | 0    | Every pre-existing block. No signal. |
+| 0                 | `0x00000000`  | 0        | 0           | 0    | No signal. |
+| 7                 | `0x00000007`  | 0        | 0           | 7    | Legacy cardano-node at release minor 7. Reserved; MUST NOT be emitted by an implementation of this CIP. |
 | 67                | `0x00000043`  | 0        | 0           | 67   | Gerolamo, no payload. |
 | 69                | `0x00000045`  | 0        | 0           | 69   | Dingo, no payload. |
 | 315973            | `0x0004D245`  | 0        | 1234        | 69   | `id` 69 with payload 1234. |
@@ -111,14 +113,18 @@ A value above `4294967295` is not a valid `minor` under any scheme.
 
 | `id`      | Meaning                                              |
 |-----------|------------------------------------------------------|
-| 0         | No signal. Default value of all historical blocks and of implementations that do not participate. MUST NOT be registered. |
-| 1 - 254   | Assignable through the registry.                     |
+| 0         | No signal. Default value of implementations that do not participate. MUST NOT be registered. |
+| 1 - 15    | Legacy cardano-node. Before adopting this CIP, cardano-node sets the minor to its release number within a major version, and has reached `8`. Reserved so that historical blocks decode unambiguously. MUST NOT be emitted or registered. |
+| 16 - 254  | Assignable through the registry.                     |
 | 255       | Deliberate opt-out. An operator who actively declines to identify their software, to distinguish deliberate from non-participation. |
+
+Reserved identifiers are defined here and do not appear in `registry.json`. A consumer MAY attribute a block with `scheme = 0`, `payload = 0` and `id` in `1 - 15` to cardano-node at release minor `id`.
 
 ### Producer requirements
 
-- MUST use either an `id` registered to that implementation, or `0`.
+- MUST use either an `id` registered to that implementation, `0`, or `255`.
 - MUST NOT use an `id` registered to a different implementation.
+- MUST NOT use a reserved `id` in `1 - 15`.
 - Payload MAY be any 22-bit value whose meaning is documented at the URL in the implementation's registry entry. It MUST be `0` if the implementation publishes no payload specification.
 - SHOULD give the operator a configuration option to emit `255` instead. Some SPOs have operational rules against disclosing software versions.
 - SHOULD default to signalling. SHOULD allow a user of their software to opt-out of signalling.
@@ -126,7 +132,8 @@ A value above `4294967295` is not a valid `minor` under any scheme.
 ### Registry
 
 - Files: `registry.json` (data) and `registry.schema.json` (JSON schema). Both are in this directory.
-- Entry fields (see schema): `scheme`, `id`, `name`, `status` (`active` | `retired` | `reserved`), `maintainer`, `repository`, `payload_specification` (URL or `null`), `registered` (date), `retired` (date or `null`), `description`.
+- Entry fields (see schema): `scheme`, `id`, `name`, `status` (`active` | `retired`), `maintainers` (array of GitHub accounts), `repository`, `payload_specification` (URL or `null`), `registered` (date), `retired` (date or `null`), `description`.
+- The registry lists only identifiers assigned to implementations. Reserved identifiers are defined by this document and MUST NOT be added to `registry.json`.
 - The registry is partitioned by `scheme`. An identifier is the pair `(scheme, id)`, and that pair is unique. The same `id` under two different schemes refers to two unrelated entries. This CIP defines only entries with `scheme = 0`; a future CIP that defines a new scheme adds entries under that scheme to the same file.
 - The schema cannot enforce uniqueness of `(scheme, id)` across entries; editors check it at review. Consider a small CI script later.
 
@@ -134,25 +141,25 @@ A value above `4294967295` is not a valid `minor` under any scheme.
 
 - Open a PR against `registry.json` only.
 - Eligibility: a node implementation that produces, or is about to produce, blocks on a public Cardano network (mainnet or a public testnet). One `id` per implementation, not per version.
-- Requester MAY propose a specific number in 1–254; otherwise editors assign. First come, first served; no meaning attached to the number.
-- PR MUST name a maintainer contact and a public repository.
+- Requester MAY propose a specific number in 16–254; otherwise editors assign. First come, first served; no meaning attached to the number.
+- PR MUST list at least one GitHub account under `maintainers` and a public repository. The listed accounts are the ones entitled to amend the entry.
 - No CIP is required per entry.
 
 #### Update
 
-- Name, maintainer, repository and payload URL change by PR from the current maintainer (or with their visible consent).
+- Name, maintainers, repository and payload URL change by PR from a listed maintainer (or with their visible consent).
 - Payload format changes are the implementation's responsibility. The published payload specification MUST remain able to decode historical values, either by being backward compatible or by carrying its own version marker inside the 22 bits.
 
 #### Retirement
 
-- Maintainer, or editors after a documented period of inactivity, set `status = retired` and `retired = <date>`.
+- A listed maintainer, or editors after a documented period of inactivity, set `status = retired` and `retired = <date>`.
 - Retired identifiers are never reassigned within their scheme. Blocks are permanent, so the mapping must be too.
 - Retired entries stay in `registry.json`.
 - If the assignable range of a scheme is exhausted, whether by active or retired entries, the remedy is a new CIP defining the next `scheme` value, which opens a fresh identifier space. Identifiers are never reclaimed.
 
 #### Transfer
 
-- Ownership moves by PR with consent from the current maintainer. Disputes go to CIP editors.
+- Ownership moves by PR with consent from a listed maintainer. Disputes go to CIP editors.
 
 ### Versioning
 
@@ -172,17 +179,30 @@ Most importantly, this is the mechanism the ecosystem has already chosen. Matthi
 
 ### Why 8 bits for the identifier
 
-The `id` needs to be large enough that no plausible number of block-producing implementations exhausts it, but small enough to leave room for the implementation to provide additional useful data. Eight bits gives us 254 assignable values. Two-letter codes, as suggested during the CIP-0180 review, would give more values (676), but would greatly reduce the usable bits for a payload. Eight bits gives us a reasonable allocation to do both.
+The `id` needs to be large enough that no plausible number of block-producing implementations exhausts it, but small enough to leave room for the implementation to provide additional useful data. Eight bits gives us 239 assignable values. Two-letter codes, as suggested during the CIP-0180 review, would give more values (676), but would greatly reduce the usable bits for a payload. Eight bits gives us a reasonable allocation to do both.
 
 ### Why the identifier is in the low-order byte
 
 The low-order byte preserves backwards compatibility. Dingo and Gerolamo have produced blocks that use a plain integer. Under this scheme, those values would decode as identifier `69` and `67` respectively, with an empty payload and scheme `0`. It also means that an explorer that already displays the decimal value of the minor version shows the identifier, and a reader who knows the registry can resolve it easily.
 
+### Why identifiers 1 to 15 are reserved
+
+cardano-node has, historically, used the minor version to different between node releases within a single major protocol version. The values it has set on mainnet are:
+
+| Major | Minors set |
+|-------|------------|
+| 3 - 5 | 0 |
+| 6 - 7 | 0, 1, 2 |
+| 8 - 9 | 0, 1 |
+| 10    | 0, 2, 3, 7, 8 |
+
+Reserving `1 - 15` keeps those blocks unambiguous and leaves headroom for further releases before cardano-node adopts this CIP. Sixteen is a nibble boundary, so a decoder can test `id < 16`.
+
 ### Why a scheme version
 
 Two bits at the top of the field let a future CIP redefine the remaining thirty without ambiguity. Every value emitted so far has these bits clear, so this preserves backwards compatibility. Bitcoin's BIP 9 reserves the top bits of the block version field for the same reason.
 
-The scheme bits also solve identifier exhaustion. Because retired identifiers are never reassigned, the 254 assignable values under scheme `0` can only shrink over time. If they run out, or if enough have been retired that the remaining range is awkward, a new CIP can define scheme `1` with the same layout and a fresh set of 254 identifiers. The registry is keyed by scheme for exactly this reason: an entry for identifier `69` under scheme `1` is unrelated to Dingo's identifier `69` under scheme `0`, and both remain decodable forever. Four schemes give 1016 identifiers in total before the layout itself would need to change, which is well beyond any plausible number of block-producing implementations.
+The scheme bits also solve identifier exhaustion. Because retired identifiers are never reassigned, the 239 assignable values under scheme `0` can only shrink over time. If they run out, or if enough have been retired that the remaining range is awkward, a new CIP can define scheme `1` with the same layout and a fresh set of 254 identifiers. The registry is keyed by scheme for exactly this reason: an entry for identifier `69` under scheme `1` is unrelated to Dingo's identifier `69` under scheme `0`, and both remain decodable forever. Four schemes give roughly a thousand identifiers in total before the layout itself would need to change, which is well beyond any plausible number of block-producing implementations.
 
 ### Why the payload is implementation-defined
 
@@ -212,7 +232,7 @@ An operator who does not want to disclose their software could simply emit `0`, 
 
 ### Backward compatibility
 
-Every block produced before this CIP carries a minor version that would decode to a valid, and informative identifer. Producers that do not adopt this CIP continue to emit `0`, and are thus counted as unsignalled correctly.
+Every block produced before this CIP decodes to a value this document already accounts for: `0 - 15` for cardano-node releases, and `67` or `69` for Gerolamo and Dingo, which match their registry entries. Producers that never adopt this CIP continue to emit `0` and are attributed correctly either way.
 
 ## Path to Active
 

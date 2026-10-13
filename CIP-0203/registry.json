@@ -22,5 +22,17 @@
     "registered": "2026-09-21",
     "retired": null,
     "description": "Go implementation of the Cardano node."
+  },
+  {
+    "scheme": 0,
+    "id": 79,
+    "name": "TSUNAGI",
+    "status": "active",
+    "maintainers": ["cryptoleo79"],
+    "repository": "https://github.com/cryptoleo79/tsunagi-preview",
+    "payload_specification": null,
+    "registered": "2026-10-13",
+    "retired": null,
+    "description": "Independent Cardano node implementation written in Zig, with demonstrated Preview block production and ongoing sovereign Mainnet qualification."
   }
 ]

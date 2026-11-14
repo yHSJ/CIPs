@@ -1,8 +1,8 @@
 ---
 CIP: 1
 Title: CIP Process
-Status: Active
 Category: Meta
+Status: Active
 Authors:
     - Frederic Johnson <frederic@advanceweb3.com>
     - Sebastien Guillemot <sebastien@dcspark.io>
@@ -12,10 +12,10 @@ Authors:
     - Robert Phair <rphair@cosd.com>
 Implementors: N/A
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/366
-    - https://github.com/cardano-foundation/CIPs/pull/331
-    - https://github.com/cardano-foundation/CIPs/tree/3da306f3bfe89fa7de8fe1bf7a436682aeee25c5/CIP-0001#abstract
-    - https://github.com/cardano-foundation/CIPs/pull/924
+    - CIP-9999? | Cardano Problem Statements + new CIP-0001: https://github.com/cardano-foundation/CIPs/pull/366
+    - CIP-0001 | Rework to reflect reality: https://github.com/cardano-foundation/CIPs/pull/331
+    - Original CIP-0001 Abstract: https://github.com/cardano-foundation/CIPs/tree/3da306f3bfe89fa7de8fe1bf7a436682aeee25c5/CIP-0001#abstract
+    - CIP-0001 | Annual overhaul and process update: https://github.com/cardano-foundation/CIPs/pull/924
 Created: 2020-03-21
 License: CC-BY-4.0
 ---
@@ -26,7 +26,7 @@ A Cardano Improvement Proposal (CIP) is a formalised design document for the Car
 
 The Cardano Foundation intends CIPs to be the primary mechanisms for proposing new features, collecting community input on an issue, and documenting design decisions that have gone into Cardano. Plus, because CIPs are text files in a versioned repository, their revision history is the historical record of significant changes affecting Cardano.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 CIPs aim to address two challenges mainly:
 1. The need for various parties to agree on a common approach to ease the interoperability of tools or interfaces.
@@ -81,14 +81,15 @@ Name                                            | Description
 ---                                             | ---
 Preamble                                        | Headers containing metadata about the CIP ([see below](#header-preamble)).
 Abstract                                        | A short (\~200 word) description of the proposed solution and the technical issue being addressed.
-Motivation: why is this CIP necessary?          | A clear explanation that introduces a proposal's purpose, use cases, and stakeholders. If the CIP changes an established design, it must outline design issues that motivate a rework. For complex proposals, authors must write a [Cardano Problem Statement (CPS) as defined in CIP-9999][CPS] and link to it as the `Motivation`.
+Motivation: Why is this CIP necessary?          | A clear explanation that introduces a proposal's purpose, use cases, and stakeholders. If the CIP changes an established design, it must outline design issues that motivate a rework. For complex proposals, authors must write a [Cardano Problem Statement (CPS) as defined in CIP-9999][CPS] and link to it as the `Motivation`.
 Specification                                   | The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely based on the design outlined in the CIP. A complete and unambiguous design is necessary to facilitate multiple interoperable implementations. <br/><br/>This section must address the [Versioning](#versioning) requirement unless this is addressed in an optional Versioning section.<br/><br/> If a proposal defines structure of on-chain data it must include a CDDL schema.
-Rationale: how does this CIP achieve its goals? | The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion. <br/><br/>It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a [CPS][], the 'Rationale' section should explain how it addresses the CPS and answer any questions that the CPS poses for potential solutions.
+Rationale: How does this CIP achieve its goals? | The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion. <br/><br/>It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a [CPS][], the 'Rationale' section should explain how it addresses the CPS and answer any questions that the CPS poses for potential solutions.
 Path to Active                                  | Organised in two sub-sections (see [Path to Active](#path-to-active) for detail):<br/><h5>Acceptance Criteria</h5>Describes what are the acceptance criteria whereby a proposal becomes _'Active'_.<br/><h5>Implementation Plan</h5>Either a plan to meet those criteria or `N/A` if not applicable.
-_optional sections_                             | May appear in any order, or with custom titles, at author and editor discretion:<br/>**Versioning**: if [Versioning](#versioning) is not addressed in Specification<br/>**References**<br/>**Appendices**<br/>**Acknowledgements**
+_optional sections_                             | May appear in any order, or with custom titles, at author and editor discretion:<br/>**Versioning**: if [Versioning](#versioning) is not addressed in Specification<br/>**References**<br/>**Appendices**<br/>**Acknowledgements**<br/>**Open Questions**: unresolved design questions left for future discussion
 Copyright                                       | The CIP must be explicitly licensed under acceptable copyright terms ([see below](#licensing)).
 
-> **Note** Each of these section titles (*Abstract* onward) should be an H2 heading (beginning with markdown `##`).  Subsections like _Versioning_ or _Acceptance Criteria_ should be H3 headings (e.g. `### Versioning`).  Don't include a H1 title heading (markdown `#`): for web friendly contexts, this will be generated from the Preamble.
+> [!NOTE]
+> Each of these section titles (*Abstract* onward) should be an H2 heading (beginning with markdown `##`).  Subsections like _Versioning_ or _Acceptance Criteria_ should be H3 headings (e.g. `### Versioning`).  Don't include a H1 title heading (markdown `#`): for web friendly contexts, this will be generated from the Preamble.
 
 ##### Header Preamble
 
@@ -97,13 +98,13 @@ Each CIP must begin with a YAML key:value style header preamble (also known as _
 Field          | Description
 ---            | ---
 `CIP`          | The CIP number (without leading 0), or "\?" before being assigned
-`Title`        | A succinct and descriptive title.  If necessary, use a `-` delimiter to begin with an applicable classification (see [Naming CIPs with similar subjects](#naming-cips-with-similar-subjects)).
+`Title`        | A succinct and descriptive title.  If necessary, use a `-` delimiter to begin with an applicable classification (see [Naming CIPs with similar subjects](#naming-cips-with-similar-subjects)).  Don't use backticks (<code>`</code>) in titles since they disrupt formatting in other contexts.
+`Category`     | One of the editorially accepted [categories](#categories) covering one area of the ecosystem.
 `Status`       | Proposed \| Active \| Inactive (.._reason_..)
-`Category`     | One of the registered [categories](#categories) covering one area of the ecosystem.
 `Authors`      | A list of authors' real names and email addresses (e.g. John Doe <john.doe@email.domain>)
-`Implementors` | A list of implementors committed to delivering an implementation of the proposal, when applicable. `N/A` when not applicable and `[]` when there's currently no implementor.
+`Implementors` | A list of implementors committed to delivering an implementation of the proposal, when applicable. Each entry uses the same `Name <email-or-URI>` shape as `Authors` — the bracketed contact may be an email address or a project URI. `N/A` when not applicable and `[]` when there's currently no implementor.
 `Discussions`  | A list of links where major technical discussions regarding this CIP happened. Links should include any discussion before submission, and _must_ include a link to the pull request that created the CIP and any pull request that modifies it.
-`Solution-To`  | A list of [CPS][] that this CIP addresses, if any. Omitted when not applicable.
+`Solution To`  | A list of [CPS][] that this CIP addresses, if any, as `CPS-NNNN[?] [\| optional title]: URL` entries (mirrors the `Proposed Solutions` field of a CPS). Omitted when not applicable.
 `Created`      | Date created on, in ISO 8601 (YYYY-MM-DD) format
 `License`      | Abbreviation of an approved license(s)
 
@@ -113,8 +114,8 @@ For example:
 ---
 CIP: 1
 Title: CIP Process
-Status: Active
 Category: Meta
+Status: Active
 Authors:
     - Frederic Johnson <frederic.johnson@cardanofoundation.org>
     - Sebastien Guillemot <sebastien@dcspark.io>
@@ -134,7 +135,8 @@ Discussions:
     - Original-PR: https://github.com/cardano-foundation/CIPs/pull/366
 ```
 
-> **Note** A reference template is available in [.github/CIP-TEMPLATE.md][CIP-TEMPLATE.md]
+> [!TIP]
+> A reference template is available in [.github/CIP-TEMPLATE.md][CIP-TEMPLATE.md]
 
 ##### Repository Organization
 
@@ -192,15 +194,15 @@ CIPs are licensed in the public domain. More so, they must be licensed under one
 | For software / code | Apache-2.0 - [Apache License, version 2.0][Apache-2.0]                                 |
 | For documentation   | CC-BY-4.0 - [Creative Commons Attribution 4.0 International Public License][CC-BY-4.0] |
 
-> **Warning**
->
+> [!WARNING]
 > All licenses not explicitly included in the above lists are not acceptable terms for a Cardano Improvement Proposal unless a later CIP extends this one to add them.
 
 #### Statuses
 
 CIPs can have three statuses: `Proposed`, `Active` or `Inactive`. [The CIP Process section](#process) highlights how CIPs move through these statuses; no CIP should be given one of these statuses without satisfying the criteria described here below.
 
-> **Note** There is no "draft" status: a proposal which has not been merged (and hence exists in a PR) is a draft CIP. Draft CIPs should include the status they are aiming for on acceptance. Typically, but not always, this will be _'Proposed'_.
+> [!NOTE]
+> There is no "draft" status: a proposal which has not been merged (and hence exists in a PR) is a draft CIP. Draft CIPs should include the status they are aiming for on acceptance. Typically, but not always, this will be _'Proposed'_.
 
 ##### Status: Proposed
 
@@ -216,7 +218,7 @@ A _'Proposed'_ CIP is any CIP that meets the essential CIP criteria but is not y
 An _'Active'_ CIP has taken effect according to the criteria defined in its _'Path to Active'_ section. Said differently, each CIP defines by which criteria it can become _'Active'_ and those criteria are included in the review process. Exact criteria thereby depends on the nature of the CIP, typically:
 
 - For CIPs that relate to particular projects or pieces of technology, it becomes _'Active'_ by being implemented and released;
-- For changes to the Cardano protocol, a CIP becomes _'Active'_ by being live on the Cardano mainnet;
+- For changes to the Cardano protocol, a CIP becomes _'Active'_ by being live on the Cardano mainnet within one or more implementations;
 - For ecosystem standards, it means gaining sufficient and visible adoption in the community.
 - It must have a valid [Path to Active](#path-to-active) as defined below: even the CIP is already acknowledged as `Active` or being documented retroactively (after acceptance and implementation).
 
@@ -244,7 +246,8 @@ This must be subdivided into two sub-sections:
 
     In particular, an implementation that requires a hard-fork should explicitly mention it in its _'Implementation Plan'_.
 
-> **Note** the statuses of `Proposed` and `Active` _both_ require a _Path to Active_ section, making this a _required_ section for all viable proposals.  Even if a CIP is edited or submitted with an `Inactive` status, it may still be helpful to have a `Path to Active` if there are conditions that might lead to its acceptance or implementation.
+> [!NOTE]
+> The statuses of `Proposed` and `Active` _both_ require a _Path to Active_ section, making this a _required_ section for all viable proposals.  Even if a CIP is edited or submitted with an `Inactive` status, it may still be helpful to have a `Path to Active` if there are conditions that might lead to its acceptance or implementation.
 
 #### Categories
 
@@ -262,18 +265,17 @@ Tools    | A broad category for ecosystem features not falling into any other ca
 
 Additionally, representatives of ecosystem categories may explicitly _enlist_ their categories (see next section) to suggest a closer relationship with the CIP process. The following categories are confirmed as enlisted according to CIPs which define that relationship:
 
-Category | Description
----      | ---
-Plutus   | Changes or additions to Plutus, following the process described in [CIP-0035][]
-Ledger   | For proposals regarding the Cardano ledger, following the process described in [CIP-0084][]
+Core Category | Description
+---           | ---
+Plutus        | Changes or additions to Plutus, following the process described in [CIP-0035][]
+Ledger        | For proposals regarding the Cardano ledger, following the process described in [CIP-0084][]
 
 These tentatively enlisted categories await CIPs to describe any enlistment relationship:
 
-Category  | Description
----       | ---
-Catalyst  | For proposals affecting Project Catalyst or the Jörmungandr project
-Consensus | For proposals affecting implementations of the Cardano Consensus layer and algorithms
-Network   | Specifications and implementations of Cardano's network protocols and applications
+Core Category  | Description
+---            | ---
+Consensus      | For proposals affecting implementations of the Cardano Consensus layer and algorithms
+Network        | Specifications and implementations of Cardano's network protocols and applications
 
 #### Project Enlisting
 
@@ -289,7 +291,8 @@ It should be noted that single organisations can no longer represent any ecosyst
 
 Any guidelines for this cooperation should be described by a dedicated CIP whenever possible.  When such a CIP is posted or supersedes another one, it will be entered into the above table in the Categories section.  Participants of enlisted categories should follow the requirements outlined in that CIP and should update such proposals whenever these requirements or relationships change.
 
-> **Warning** A positive review by any enlisted project representative does not constitute a commitment to implement the CIP. It is still the CIP author's responsibility to create an implementation plan and identify implementors.
+> [!WARNING]
+> A positive review by any enlisted project representative does not constitute a commitment to implement the CIP. It is still the CIP author's responsibility to create an implementation plan and identify implementors.
 
 Editors occasionally invite representatives from enlisted categories to speak during review meetings and solicit them for ultimate approvals of proposals in their area of expertise.
 
@@ -305,11 +308,20 @@ Editors occasionally invite representatives from enlisted categories to speak du
 
 ##### 1.a. Authors open a pull request
 
-Proposals must be submitted to the [cardano-foundation/CIPs][Repository] repository as a pull request named after the proposal's title. The pull request title **should not** include a CIP number (and use `?` instead as number); the editors will assign one. Discussions may precede a proposal. Early reviews and discussions streamline the process down the line.
+Proposals must be submitted to the [cardano-foundation/CIPs][Repository] repository as a pull request named after the proposal's title. The pull request title **should not** include a CIP number (and use `?` instead as number); the editors will assign one. Discussions may precede a proposal: early reviews and discussions streamline the process down the line.
 
-> **Note** Pull requests should not include implementation code: any code bases should instead be provided as links to a code repository.
+PRs should not contain commits that also appear in other repository PR's: usually the consequence of re-using a branch in your fork or submitting your work from your fork's `master` branch.  To avoid this, please:
+- Don't submit your PR from your fork's `master` branch.
+- Create a new branch for every pull request that you intend to submit.
 
-> **Note** Proposals addressing a specific CPS should also be listed in the corresponding CPS header, in _'Proposed Solutions'_, to keep track of ongoing work.
+> [!TIP]
+> The CIP title in the pull request should be kept consistent with the CIP header `Title:`.
+
+> [!IMPORTANT]
+> Pull requests should not include implementation code: any code bases should instead be provided as links to a code repository.
+
+> [!NOTE]
+> Proposals addressing a specific CPS should also be listed in the corresponding CPS header, in _'Proposed Solutions'_, to keep track of ongoing work.
 
 ###### Naming CIPs with similar subjects
 
@@ -323,7 +335,16 @@ CIP editors will help determine these common elements and, whenever necessary, r
 
 In the original comment for your pull request, please include a link to the directory or the `README.md` for the CIP in your working branch, so readers and reviewers can easily follow your work.  This makes it easier for editors and the community to read and review your proposal.
 
-> **Note** If this link changes (e.g. from the CIP directory being renamed), please keep this link updated.
+> [!NOTE]
+> If this link changes (e.g. from the CIP directory being renamed), please keep this link updated.
+
+###### Follow a reviewer- and editor-friendly review process
+
+As review progresses:
+- When editors and reviewers submit changes that you accept, commit them from the GitHub UI so these review points are resolved.
+- Even if resolving these in your own environemnt, mark any review points Resolved as they are resolved: otherwise your PR will appear stalled and merging will likely be delayed.
+- **Don't "force push"**: which overwrites commit histories and disrupts change visibility during the review process.  Instead, `git merge` the PR branch back into your local environment: which will preserve any collaborative editing history.
+
 
 ##### 1.b. Authors seek feedback
 
@@ -335,7 +356,8 @@ As much as possible, commenters/reviewers shall remain unbiased in their judgeme
 
 By opening pull requests or posting comments, commenters and authors agree to our [Code of Conduct][CoC]. Any comment infringing this code of conduct shall be removed or altered without prior notice.
 
-> **Note** For acceptability guidelines, including a concise review checklist, see 
+> [!NOTE]
+> For acceptability guidelines, including a concise review checklist, see 
 [CIP Wiki > CIPs for Reviewers & Authors](https://github.com/cardano-foundation/CIPs/wiki/2.-CIPs-for-Reviewers-&-Authors).
 
 #### 2. Editors' role
@@ -356,7 +378,8 @@ A dedicated Discord channel may also be created for some long-running discussion
 
 Once a proposal has reached all requirements for its target status (as explained in [Statuses](#statuses)) and has been sufficiently and faithfully discussed by community members, it is merged with its target status.
 
-> **Warning** Ideas deemed unsound shall be rejected with justifications or withdrawn by the authors. Similarly, proposals that appear abandoned by their authors shall be rejected until resurrected by their authors or another community member.
+> [!WARNING]
+> Ideas deemed unsound shall be rejected with justifications or withdrawn by the authors. Similarly, proposals that appear abandoned by their authors shall be rejected until resurrected by their authors or another community member.
 
 CIPs are generally merged with the status _'Proposed'_ until they meet their _'Path to Active'_ requirements. In some rare cases (mainly when written after the facts and resulting in a broad consensus), proposals may be merged as _'Active'_ immediately.
 
@@ -366,7 +389,8 @@ Each proposal is unique and has a bespoke _'Path to Active'_, which must be revi
 
 Once merged, implementors shall execute the CIP's _'Implementation Plan'_, if any. If a proposal has no implementors or no _'Implementation Plan'_, it may simply remain as _'Proposed'_ in the repository.
 
-> **Warning** It is perfectly fine to submit ideas in the repository with no concrete implementation plan, yet they should be treated as such: ideas.
+> [!WARNING]
+> It is perfectly fine to submit ideas in the repository with no concrete implementation plan, yet they should be treated as such: ideas.
 
 Besides, once all of the _'Path to Active'_ requirements have been met, authors shall make another pull request to change their CIP's status to _'Active'_. Editors may also do this on occasion.
 
@@ -401,23 +425,22 @@ Existing editors or the community may nominate new editors, provided they have p
 
 The missions of an editor include, but aren't exclusively limited to, any of the tasks listed above. Active members that seek to become listed editors may also come forth and let it be known. Any application will take the form of a pull request updating this document with a justification as the pull request's description.
 
-Current editors are listed here below:
+| Current editors  |                                              |
+|:-----------------|:---------------------------------------------|
+| Robert Phair     | [@rphair](https://github.com/rphair)         |
+| Ryan Williams    | [@Ryun1](https://github.com/Ryun1)           |
+| Thomas Vellekoop | [@perturbing](https://github.com/perturbing) |
+| Sebastian Nagel  | [@ch1bo](https://github.com/ch1bo)           |
+| Adam Dean        | [@Crypto2099](https://github.com/Crypto2099) |
 
-| Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] | Adam Dean <br/> [@Crypto2099][] | Thomas Vellekoop <br/> [@perturbing][] |
-| ---                            | ---                            | ---                             | ---                                    |
+| Emeritus editors    |                                                      |
+|:--------------------|:-----------------------------------------------------|
+| Frederic Johnson    | [@crptmppt](https://github.com/crptmppt)             |
+| Sebastien Guillemot | [@SebastienGllmt](https://github.com/SebastienGllmt) |
+| Matthias Benkort    | [@KtorZ](https://github.com/KtorZ)                   |
+| Duncan Coutts       | [@dcoutts](https://github.com/dcoutts)               |
 
-[@rphair]: https://github.com/rphair
-[@Ryun1]: https://github.com/Ryun1
-[@Crypto2099]: https://github.com/Crypto2099
-[@perturbing]: https://github.com/perturbing
-
-Emeritus editors:
-- Frederic Johnson - [@crptmppt](https://github.com/crptmppt)
-- Sebastien Guillemot - [@SebastienGllmt](https://github.com/SebastienGllmt)
-- Matthias Benkort - [@KtorZ](https://github.com/KtorZ)
-- Duncan Coutts - [@dcoutts](https://github.com/dcoutts)
-
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Key changes from CIP-0001 (version 1)
 

@@ -1,6 +1,6 @@
 ---
 CIP: 138
-Title: Plutus Core Builtin Type - `Array`
+Title: Plutus Core Builtin Type - Array
 Category: Plutus
 Status: Proposed
 Authors:
@@ -8,7 +8,7 @@ Authors:
     - Ana Pantilie <ana.pantilie@iohk.io>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/915
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/915
 Created: 2024-09-18
 License: CC-BY-4.0
 ---
@@ -18,7 +18,7 @@ License: CC-BY-4.0
 We propose an array builtin type for Plutus Core. This type will have constant-time lookup,
 which is a useful feature that is otherwise not possible to achieve. 
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The first part of [CPS-0013][1] outlines in great detail the motivation for introducing this
 new builtin type.
@@ -62,96 +62,11 @@ We add the following builtin functions:
 
 As with all Plutus Core builtin types, arrays must have a fixed binary representation.
 
-For arrays we have chosen the following representation, based on the one currently
-implemented in the [flat][8] encoding for the [Haskell `Array` type][9].
+For arrays, this representation will be based on the one currently implemented in the [flat][8] encoding
+for the [Haskell `List` type][9].  Plutus Core arrays must be converted to lists before being serialised,
+and deserialisation is performed by using the flat decoder for lists and converting the result to an array.
 
-We define the result of encoding a Plutus Core array of type `Array a`
-and with length `n`, as follows:
-- Let:
-    - `Ea` be an encoding function for `a`, i.e. it is of type `a -> ByteString`.
-    - `Ei` be an encoding function for `Integer`
-    - `++` be bytestring concatenation
-    - `bin(i)` be the binary representation for any number `i`.
-- The first bits in the resulting sequence will be `Ei(0) ++ Ei(n-1)`, that is the
-encoding of the first index followed by the encoding of the last.
-- As binary, arrays are split into _blocks_ of `255` elements. For each block, the first
-bits in the block encoding represent the number of elements in the block. This can be decided
-as follows:
-    - there will be `n div 255` blocks where the next bits are `bin(255)`
-    - and, if `n mod 255 > 0`, one final block where the next bits are `bin(n mod 255)`. 
-- Inside each block, the next bits come from encoding all the elements pertaining to
-the block:
-    - we will refer to each block as `b0 ... bm` where `m+1` is the number of blocks;
-    - `indexArray` is a function with the same behaviour as the proposed `indexArray` builtin,
-    since it is fixed, we omit the array argument for brevity;
-    - for the block `bi`, the bit sequence will be:
-    `Ea(indexArray(i*255)) ++ Ea(indexArray(i*255 + 1)) ++ ... ++ Ea(indexArray(i*255 + m))`.
-- After all blocks have been encoded, the resulting binary sequence is appended with exactly
-`8` bits of value `0`. 
-
-***Remarks***:
-- Empty arrays are represented as: `Ei(0) ++ Ei(-1) ++ 00000000`. This follows from the
-encoding described above, as `n` is `0` and there are no elements to encode.
-- The decoding of arrays is, of course, the inverse of the encoding function.
-
-<details>
-    <summary>
-    Expand to see examples of applying the above encoding strategy to arrays of different element types.
-    </summary>
-
-    ------------
-    -- Example 1
-    >>> encode [1] as an array:
-    00000000 00000000 00000001 00000010 00000000
-
-    -- the first and last indices are 0, the number of elements is 1
-    -- 00000010 is the encoding of 1 of type Integer
-    -- the bytestring ends with 8 bits of value 0
-
-    ------------
-    -- Example 2
-    >>> encode [1, 1, 1] as an array:
-    00000000 00000100 00000011 00000010 00000010 00000010 00000000
-    -- ^ 0      ^ 2      ^ 3      ^ 1      ^ 1      ^ 1 
-    
-    ------------
-    -- Example 3
-    >>> encode [11, 22, 33, 44] as an array:
-    00000000 00000110 00000100 00010110 00101100 01000010 01011000 00000000
-    -- ^ 0     ^ 3     ^ 4     ^ 11      ^ 22     ^ 33     ^ 44
-
-    ------------
-    -- Example 4
-    >>> encode [True, True, True] as an array:
-    00000000 00000100 00000011 11100000 000
-
-    -- True is encoded as a single bit of value 1
-    -- notice how the eight final zeros are split between multiple bytes
-
-    ------------
-    -- Example 5
-    >>> encode [True ... True] (255 times) 
-    00000000 11111100 00000011 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111110 0000000
-
-    -- 11111100 00000011 is the representation of 254, the last index
-    -- 11111111 is the total number of elements in the block, 255
-    -- True is encoded to 1, so the bytes get filled except the last one, since 255 does not divide by 8
-    -- there are again 8 final zeros split between the two last bytes
-
-    ------------
-    -- Example 6
-    >>> encode [True ... True] (256 times)
-    00000000 11111110 00000011 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111110 00000011 00000000
-
-    -- again, since True does not encode to full bytes, the above example can be tricky to decode, but is nevertheless correct
-    -- 0 0000001 is the beginning of the second block, it represents the number of elements in the block which is 1
-    -- immediately after, there is 1 bit which is the encoding of the single element of this block
-    -- and finally, the last 8 zeros 
-
-</details>
-
-
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Choice of builtin functions and their specification
 
@@ -291,4 +206,4 @@ This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4
 [6]: https://github.com/IntersectMBO/cardano-ledger "cardano-ledger"
 [7]: https://github.com/IntersectMBO/cardano-node "cardano-node"
 [8]: https://hackage.haskell.org/package/flat "flat"
-[9]: https://hackage.haskell.org/package/array-0.5.4.0/docs/Data-Array.html#t:Array "Haskell Array"
+[9]: https://hackage.haskell.org/package/base-4.21.0.0/docs/Data-List.html "Haskell List"
